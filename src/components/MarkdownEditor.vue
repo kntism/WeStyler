@@ -96,7 +96,7 @@ const copyPreviewContent = () => {
           @input="updatePreview"
         />
       </el-aside>
-      <el-aside width="375px" class="preview-section">
+      <el-aside width="414px" class="preview-section">
         <div class="section-title">
           预览
           <el-button
