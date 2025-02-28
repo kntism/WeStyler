@@ -155,10 +155,7 @@ const copyPreviewContent = () => {
   border: 1px solid #dcdfe6;
   border-radius: 20px;
   background-color: white;
-  padding: 20px;
   overflow-y: auto;
-  word-wrap: break-word;
-  white-space: pre-wrap;
 }
 
 :deep(.el-textarea__inner) {
