@@ -1,90 +1,91 @@
 <script setup>
-import { ref } from 'vue'
-import MarkdownIt from 'markdown-it'
-import exampleContent from '../assets/example.md?raw'
-import markdownPreviewStyle from '../assets/markdown-preview.css?raw'
+import { ref } from "vue";
+import MarkdownIt from "markdown-it";
+import exampleContent from "../assets/example.md?raw";
+import markdownPreviewStyle from "../assets/markdown-preview.css?raw";
 
-const md = new MarkdownIt()
+const md = new MarkdownIt();
 
 // 默认的Markdown内容
-const markdownContent = ref(exampleContent)
+const markdownContent = ref(exampleContent);
 
 // 从外部文件导入的样式内容
-const styleContent = ref(markdownPreviewStyle)
+const styleContent = ref(markdownPreviewStyle);
 
-const htmlContent = ref('')
-const styleElement = ref(null)
+const htmlContent = ref("");
+const styleElement = ref(null);
 
 const updatePreview = () => {
   // 更新HTML内容
-  htmlContent.value = md.render(markdownContent.value)
-  
+  htmlContent.value = md.render(markdownContent.value);
+
   // 更新样式
   if (!styleElement.value) {
-    styleElement.value = document.createElement('style')
-    document.head.appendChild(styleElement.value)
+    styleElement.value = document.createElement("style");
+    document.head.appendChild(styleElement.value);
   }
-  styleElement.value.textContent = styleContent.value
-}
+  styleElement.value.textContent = styleContent.value;
+};
 
 // 初始化预览
-updatePreview()
+updatePreview();
 
 const copyPreviewContent = () => {
   try {
-    const previewContent = document.querySelector('.preview-content')
+    const previewContent = document.querySelector(".preview-content");
 
-    if(!previewContent) {
-      throw new Error('无法找到预览内容元素');
+    if (!previewContent) {
+      throw new Error("无法找到预览内容元素");
     }
 
-    const selection = window.getSelection()
-    const range = document.createRange()
-    
+    const selection = window.getSelection();
+    const range = document.createRange();
+
     // 记录当前选区
-    const originalSelection = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+    const originalSelection =
+      selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
     // 清除当前选区
-    selection.removeAllRanges()
-    
+    selection.removeAllRanges();
+
     // 选中预览内容
-    range.selectNodeContents(previewContent)
-    selection.addRange(range)
-    
+    range.selectNodeContents(previewContent);
+    selection.addRange(range);
+
     // 执行复制命令
-    const successful = document.execCommand('copy')
-    
+    const successful = document.execCommand("copy");
+
     // 清除选区
-    selection.removeAllRanges()
+    selection.removeAllRanges();
 
     // 恢复原选区
     if (originalSelection) {
       selection.addRange(originalSelection);
     }
-    
-    showMessage(successful)
+
+    showMessage(successful);
   } catch (err) {
-    console.error('复制失败', err);
-    showMessage(false, '复制失败，请重试');
+    console.error("复制失败", err);
+    showMessage(false, "复制失败，请重试");
   }
-}
+};
 
 const showMessage = (successful, customMessage = null) => {
   const messageConfig = {
-    type: successful ? 'success' : 'error',
+    type: successful ? "success" : "error",
     duration: 2000,
-    message: customMessage || (successful ? '复制成功！' : '复制失败，请重试')
+    message: customMessage || (successful ? "复制成功！" : "复制失败，请重试"),
   };
 
   ElMessage(messageConfig);
-}
+};
 </script>
 
 <template>
   <div class="editor-container">
     <el-container>
       <el-aside width="40%" class="editor-section">
-        <div class="section-title">Markdown编辑器</div>
+        <div class="section-title">Markdown 编辑器</div>
         <el-input
           v-model="markdownContent"
           type="textarea"
@@ -105,7 +106,7 @@ const showMessage = (successful, customMessage = null) => {
       </el-aside>
       <el-aside width="414px" class="preview-section">
         <div class="section-title">
-          预览
+          公众号预览
           <el-button
             class="copy-button"
             type="primary"
@@ -115,7 +116,9 @@ const showMessage = (successful, customMessage = null) => {
             复制
           </el-button>
         </div>
-        <div class="markdown-body preview-content" v-html="htmlContent"></div>
+        <div class="preview-content">
+          <div class="markdown-body" v-html="htmlContent" />
+        </div>
       </el-aside>
     </el-container>
   </div>
@@ -163,13 +166,19 @@ const showMessage = (successful, customMessage = null) => {
   border-radius: 20px;
   background-color: white;
   overflow-y: auto;
+  padding: 25px 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 :deep(.el-textarea__inner) {
-  height: 100%!important;
+  font-family: source-code-pro, Menlo, Courier New, Consolas, monospace;
+  background-color: #f5f5f5;
+  color: #202020;
+  height: 100% !important;
   font-family: monospace;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 25px;
+  padding: 20px;
 }
 
 :deep(.el-container) {
