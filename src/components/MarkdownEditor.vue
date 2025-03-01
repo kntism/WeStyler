@@ -33,9 +33,17 @@ updatePreview()
 const copyPreviewContent = () => {
   try {
     const previewContent = document.querySelector('.preview-content')
+
+    if(!previewContent) {
+      throw new Error('无法找到预览内容元素');
+    }
+
     const selection = window.getSelection()
     const range = document.createRange()
     
+    // 记录当前选区
+    const originalSelection = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
     // 清除当前选区
     selection.removeAllRanges()
     
@@ -48,28 +56,27 @@ const copyPreviewContent = () => {
     
     // 清除选区
     selection.removeAllRanges()
-    
-    if (successful) {
-      ElMessage({
-        message: '复制成功！',
-        type: 'success',
-        duration: 2000
-      })
-    } else {
-      ElMessage({
-        message: '复制失败，请重试',
-        type: 'error',
-        duration: 2000
-      })
+
+    // 恢复原选区
+    if (originalSelection) {
+      selection.addRange(originalSelection);
     }
+    
+    showMessage(successful)
   } catch (err) {
-    console.error('复制失败：', err)
-    ElMessage({
-      message: '复制失败，请重试',
-      type: 'error',
-      duration: 2000
-    })
+    console.error('复制失败', err);
+    showMessage(false, '复制失败，请重试');
   }
+}
+
+const showMessage = (successful, customMessage = null) => {
+  const messageConfig = {
+    type: successful ? 'success' : 'error',
+    duration: 2000,
+    message: customMessage || (successful ? '复制成功！' : '复制失败，请重试')
+  };
+
+  ElMessage(messageConfig);
 }
 </script>
 
