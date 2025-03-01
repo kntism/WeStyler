@@ -6,7 +6,7 @@
     Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  padding: 0 40px 20px 40px;
+  padding: 0 20px 20px 20px;
   word-wrap: break-word;
   word-break: break-all;
   white-space: pre-wrap;
@@ -26,7 +26,7 @@
   font-weight: bold;
   color: #000;
   line-height: 1.35;
-  margin-top: 1.2em;
+  margin-top: 1em;
   margin-bottom: 0.6em;
   border-left: 4px solid #1abc9c;
   padding-left: 0.5em;
@@ -56,7 +56,7 @@
 
 /* 引用 */
 .markdown-body blockquote {
-  padding: 0.8em 1.4rem;
+  padding: 0.3em 1.4em;
   margin: 1em 0;
   font-weight: 400;
   border-left: 4px solid #7a7a7a;
@@ -77,15 +77,12 @@
   margin-bottom: 1.5em;
   margin-left: 1em;
 }
-.markdown-body ul {
-  list-style: disc;
-}
-.markdown-body ol {
-  list-style: decimal;
-}
 .markdown-body li ul,
 .markdown-body li ol {
   margin-bottom: 0.8em;
+}
+.markdown-body li {
+  color: rgb(20, 20, 20);
 }
 
 /* 链接 */
@@ -111,7 +108,6 @@
   font-size: 14px !important;
   box-sizing: border-box;
   border-radius: 3px;
-
   overflow: auto;
 }
 .markdown-body pre code {
@@ -122,6 +118,7 @@
 .markdown-body p code,
 .markdown-body li code {
   background: #f8f8f8;
+  color: #1abc9c;
   padding: 3px 6px;
   border-radius: 3px;
   box-decoration-break: clone;
@@ -145,7 +142,7 @@
 .markdown-body table caption {
   border: 1px solid #ddd;
   padding: 0.5em 1em;
-  color: #666;
+  color: #464646;
 }
 .markdown-body table th {
   background: #fbfbfb;
@@ -166,4 +163,10 @@
 .markdown-body hr {
   border: none;
   border-bottom: 1px solid #ddd;
+}
+
+/* 斜体 */
+.markdown-body em {
+  color: #666;
+  font-size: 0.9rem;
 }
