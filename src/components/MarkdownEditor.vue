@@ -6,6 +6,38 @@ import markdownPreviewStyle from "../assets/markdown-preview.css?raw";
 
 const md = new MarkdownIt();
 
+// 自定义插件
+const listItemSectionPlugin = (md) => {
+  // 保存原始的 list_item_open 渲染函数
+  const originalListItemOpen =
+    md.renderer.rules.list_item_open ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options));
+  const originalListItemClose =
+    md.renderer.rules.list_item_close ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options));
+
+  // 重写 list_item_open
+  md.renderer.rules.list_item_open = (tokens, idx, options, env, self) => {
+    // 渲染默认的 <li> 开始标签
+    const result = originalListItemOpen(tokens, idx, options, env, self);
+    // 在 <li> 内部开头添加 <section>
+    return result.replace("<li>", "<li><section>");
+  };
+
+  // 重写 list_item_close
+  md.renderer.rules.list_item_close = (tokens, idx, options, env, self) => {
+    // 渲染默认的 </li> 结束标签
+    const result = originalListItemClose(tokens, idx, options, env, self);
+    // 在 <li> 内部末尾添加 </section>
+    return result.replace("</li>", "</section></li>");
+  };
+};
+
+// 使用自定义插件
+md.use(listItemSectionPlugin);
+
 // 默认的Markdown内容
 const markdownContent = ref(exampleContent);
 
@@ -117,7 +149,7 @@ const showMessage = (successful, customMessage = null) => {
           </el-button>
         </div>
         <div class="preview-content">
-          <div class="markdown-body" v-html="htmlContent" />
+          <section class="markdown-body" v-html="htmlContent"></section>
         </div>
       </el-aside>
     </el-container>
@@ -161,10 +193,8 @@ const showMessage = (successful, customMessage = null) => {
 }
 
 .preview-content {
-  flex: 1;
   border: 1px solid #dcdfe6;
   border-radius: 20px;
-  background-color: white;
   overflow-y: auto;
   padding: 25px 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
