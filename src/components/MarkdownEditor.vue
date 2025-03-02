@@ -1,12 +1,24 @@
 <script setup>
 import { ref } from "vue";
 import MarkdownIt from "markdown-it";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 import exampleContent from "../assets/example.md?raw";
 import markdownPreviewStyle from "../assets/markdown-preview.css?raw";
 
-const md = new MarkdownIt();
+// Markdown解析器，设置代码高亮
+const md = new MarkdownIt({
+  highlight: (str, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value;
+      } catch (__) {}
+    }
+    return ""; // 如果没有指定语言或语言不支持，则返回空字符串
+  },
+});
 
-// 自定义插件
+// 自定义插件，在<li>标签内部添加<section>标签
 const listItemSectionPlugin = (md) => {
   // 保存原始的 list_item_open 渲染函数
   const originalListItemOpen =
