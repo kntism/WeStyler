@@ -187,18 +187,30 @@
   margin-top: 30px;
 }
 
-.markdown-body .reference-list .reference-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #333;
+.markdown-body .reference-list h4 {
+  border: none;
+  color: black;
+  padding: 0;
+  font-size: 1.2rem;
   margin-top: 1.2em;
   margin-bottom: 0.8em;
 }
 
-.markdown-body .reference-list .reference-link {
-  margin-bottom: 5px;
-  font-size: 12px;
-  color: #555;
+.markdown-body .reference-list p {
+  margin-bottom: 3px;
+  padding: 0;
+  font-size: 14px;
+}
+
+.markdown-body .reference-list em {
+  font-size: 14px;
+  color: black;
+}
+
+.markdown-body .reference {
+  color: #1abc9c;
+  text-decoration: none;
+  border-bottom: 1px solid #1abc9c;
 }
 
 /* 引用上标 */

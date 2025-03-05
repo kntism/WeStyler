@@ -104,12 +104,11 @@ const linkReferencesPlugin = (md) => {
     const result = originalParagraphClose(tokens, idx, options, env, self);
     if (idx === tokens.length - 1) {
       if (links.length > 0) {
-        let references =
-          "<div class='reference-list'><div class='reference-title'>参考链接</div>";
+        let references = "<section class='reference-list'><h4>参考链接</h4>";
         links.forEach((link) => {
-          references += `<div class="reference-link" id='fn-${link.id}'>[${link.id}] ${link.title}：${link.href}</div>`;
+          references += `<p id='fn-${link.id}'>[${link.id}] ${link.title}：<em>${link.href}</em></p>`;
         });
-        references += "</div>";
+        references += "</section>";
         // 渲染完成后重置 links 数组
         resetLinks();
         return result + references;
