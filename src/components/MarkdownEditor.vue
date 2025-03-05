@@ -74,7 +74,11 @@ const linkReferencesPlugin = (md) => {
       tokens[idx].attrJoin("class", "reference");
       tokens[idx].attrSet("id", `ref-${id}`);
     }
-    return originalLinkOpen(tokens, idx, options, env, self);
+    // 将 <a> 替换为 <span>
+    return originalLinkOpen(tokens, idx, options, env, self).replace(
+      "<a",
+      "<span"
+    );
   };
 
   // 保存原始的 link_close 渲染函数
@@ -88,9 +92,10 @@ const linkReferencesPlugin = (md) => {
     const result = originalLinkClose(tokens, idx, options, env, self);
     const link = links[links.length - 1];
     if (link) {
-      return result + `<sup>[${link.id}]</sup>`;
+      return result.replace("</a>", "</span>") + `<sup>[${link.id}]</sup>`;
     }
-    return result;
+    // 将 </a> 替换为 </span>
+    return result.replace("</a>", "</span>");
   };
 
   // 保存原始的 paragraph_close 渲染函数
