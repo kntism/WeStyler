@@ -50,6 +50,78 @@ const listItemSectionPlugin = (md) => {
 // 使用自定义插件
 md.use(listItemSectionPlugin);
 
+// 新增插件：识别链接并在文章底部生成引用
+const linkReferencesPlugin = (md) => {
+  // 将 links 数组定义为局部变量，并提供一个函数用于重置
+  let links = [];
+
+  const resetLinks = () => {
+    links = [];
+  };
+
+  // 保存原始的 link_open 渲染函数
+  const originalLinkOpen =
+    md.renderer.rules.link_open ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options));
+
+  // 重写 link_open
+  md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+    const href = tokens[idx].attrGet("href");
+    if (href) {
+      const id = links.length + 1;
+      links.push({ id, href, title: tokens[idx + 1].content });
+      tokens[idx].attrJoin("class", "reference");
+      tokens[idx].attrSet("id", `ref-${id}`);
+    }
+    return originalLinkOpen(tokens, idx, options, env, self);
+  };
+
+  // 保存原始的 link_close 渲染函数
+  const originalLinkClose =
+    md.renderer.rules.link_close ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options));
+
+  // 重写 link_close
+  md.renderer.rules.link_close = (tokens, idx, options, env, self) => {
+    const result = originalLinkClose(tokens, idx, options, env, self);
+    const link = links[links.length - 1];
+    if (link) {
+      return result + `<sup>[${link.id}]</sup>`;
+    }
+    return result;
+  };
+
+  // 保存原始的 paragraph_close 渲染函数
+  const originalParagraphClose =
+    md.renderer.rules.paragraph_close ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options));
+
+  // 重写 paragraph_close
+  md.renderer.rules.paragraph_close = (tokens, idx, options, env, self) => {
+    const result = originalParagraphClose(tokens, idx, options, env, self);
+    if (idx === tokens.length - 1) {
+      if (links.length > 0) {
+        let references =
+          "<div class='reference-list'><div class='reference-title'>参考链接</div>";
+        links.forEach((link) => {
+          references += `<div class="reference-link" id='fn-${link.id}'>[${link.id}] ${link.title}：${link.href}</div>`;
+        });
+        references += "</div>";
+        // 渲染完成后重置 links 数组
+        resetLinks();
+        return result + references;
+      }
+    }
+    return result;
+  };
+};
+
+// 使用自定义插件
+md.use(linkReferencesPlugin);
+
 // 默认的Markdown内容
 const markdownContent = ref(exampleContent);
 
@@ -59,7 +131,12 @@ const styleContent = ref(markdownPreviewStyle);
 const htmlContent = ref("");
 const styleElement = ref(null);
 
+// 更新预览函数，确保每次渲染时重置 links
 const updatePreview = () => {
+  // 重置 links 数组
+  if (md.renderer.rules.paragraph_close.resetLinks) {
+    md.renderer.rules.paragraph_close.resetLinks();
+  }
   // 更新HTML内容
   htmlContent.value = md.render(markdownContent.value);
 
@@ -218,7 +295,7 @@ const showMessage = (successful, customMessage = null) => {
   color: #202020;
   height: 100% !important;
   font-family: monospace;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 25px;
   padding: 20px;
 }
