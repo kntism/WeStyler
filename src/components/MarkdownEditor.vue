@@ -294,11 +294,10 @@ const showMessage = (successful, customMessage = null) => {
 }
 
 :deep(.el-textarea__inner) {
-  font-family: source-code-pro, Menlo, Courier New, Consolas, monospace;
+  font-family: Consolas, monospace;
   background-color: #f5f5f5;
   color: #202020;
   height: 100% !important;
-  font-family: monospace;
   font-size: 14px;
   line-height: 25px;
   padding: 20px;
