@@ -163,6 +163,12 @@ const updatePreview = () => {
 
 // 加载 content 文件夹中的文件内容
 const loadContentFile = async (fileName) => {
+  // 检查是否是加载本地文件的特殊命令
+  if (fileName === '__load_local__') {
+    handleLocalFileSelect();
+    return;
+  }
+
   const filePath = `../../content/${fileName}`;
   const loadFile = contentFiles[filePath];
   if (loadFile) {
@@ -179,6 +185,47 @@ const loadContentFile = async (fileName) => {
       });
     }
   }
+};
+
+// 处理用户选择本地文件的逻辑
+const handleLocalFileSelect = () => {
+  // 创建一个隐藏的文件输入元素
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.md'; // 限制只能选择 .md 文件
+
+  // 设置文件选择后的回调
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.md')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        markdownContent.value = e.target.result;
+        updatePreview(); // 更新预览
+      };
+      reader.onerror = (e) => {
+        console.error("读取文件失败:", e);
+        ElMessage({
+          type: "error",
+          message: `读取文件失败: ${file.name}`,
+          duration: 3000,
+        });
+      };
+      reader.readAsText(file); // 以文本形式读取文件
+    } else if (file) {
+      ElMessage({
+        type: "warning",
+        message: "请选择一个 .md 文件",
+        duration: 2000,
+      });
+    }
+    // 清理：移除临时创建的 input 元素
+    // 注意：对于动态创建的元素，通常不需要手动从 DOM 移除，但保持引用清理是好习惯
+    // 这里 input 是局部变量，函数结束后会被自动垃圾回收
+  };
+
+  // 触发文件选择对话框
+  input.click();
 };
 
 // 加载 theme 文件夹中的样式文件内容
@@ -288,26 +335,32 @@ const showMessage = (successful, customMessage = null) => {
       <el-aside width="40%" class="editor-section">
         <div class="section-title">
           <span>Markdown 编辑器</span>
-          <el-dropdown
-            @command="loadContentFile"
-            size="small"
-            v-if="availableContentFiles.length > 0"
-          >
-            <el-button type="primary" size="small" plain>
-              加载文件<i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item
-                  v-for="file in availableContentFiles"
-                  :key="file"
-                  :command="file"
-                >
-                  {{ file }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <div>
+            <el-dropdown
+              @command="loadContentFile"
+              size="small"
+              v-if="availableContentFiles.length > 0"
+            >
+              <el-button type="primary" size="small" plain>
+                加载文件<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="file in availableContentFiles"
+                    :key="file"
+                    :command="file"
+                  >
+                    {{ file }}
+                  </el-dropdown-item>
+                  <!-- 新增从本地加载文件的选项 -->
+                  <el-dropdown-item command="__load_local__" divided>
+                    从本地加载...
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </div>
         <el-input
           v-model="markdownContent"
