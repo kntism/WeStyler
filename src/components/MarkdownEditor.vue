@@ -19,21 +19,14 @@ const styleContent = ref(markdownPreviewStyle);
 const htmlContent = ref("");
 const styleElement = ref(null);
 
-// 更新预览函数，确保每次渲染时重置 links
-const updatePreview = () => {
-  // 重置 links 数组
-  if (md.renderer.rules.paragraph_close.resetLinks) {
-    md.renderer.rules.paragraph_close.resetLinks();
-  }
-  // 更新 HTML 内容
-  htmlContent.value = md.render(markdownContent.value);
+// 导入预览更新工具函数
+import { updatePreview as updatePreviewUtil } from "./MarkdownEditor/previewUtils.js";
 
-  // 更新样式
-  if (!styleElement.value) {
-    styleElement.value = document.createElement("style");
-    document.head.appendChild(styleElement.value);
-  }
-  styleElement.value.textContent = styleContent.value;
+// 更新预览函数
+const updatePreview = () => {
+  const result = updatePreviewUtil(md, markdownContent.value, styleContent.value, styleElement.value);
+  htmlContent.value = result.htmlContent;
+  styleElement.value = result.styleElement;
 };
 
 // 处理内容更新
