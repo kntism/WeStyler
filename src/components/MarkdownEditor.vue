@@ -3,14 +3,17 @@ import { ref, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
-import exampleContent from "../content/guide.md?raw";
-import markdownPreviewStyle from "../theme/markdown-preview.css?raw";
+import exampleContent from "../../content/guide.md?raw";
+import markdownPreviewStyle from "../../theme/default.css?raw";
 
 // 使用 Vite 的 import.meta.glob 动态导入 content 文件夹下的所有 .md 文件
-const contentFiles = import.meta.glob('../../content/*.md', { as: 'raw' });
+const contentFiles = import.meta.glob("../../content/*.md", { as: "raw" });
+// 使用 Vite 的 import.meta.glob 动态导入 theme 文件夹下的所有 .css 文件
+const themeFiles = import.meta.glob("../../theme/*.css", { as: "raw" });
 
 // 存储文件名列表，用于下拉菜单
 const availableContentFiles = ref([]);
+const availableThemeFiles = ref([]);
 
 // Markdown 解析器，设置代码高亮
 const md = new MarkdownIt({
@@ -169,7 +172,31 @@ const loadContentFile = async (fileName) => {
       updatePreview(); // 手动触发更新，因为 @input 不会触发
     } catch (error) {
       console.error(`加载文件 ${fileName} 失败:`, error);
-      ElMessage({ type: 'error', message: `加载文件 ${fileName} 失败`, duration: 2000 });
+      ElMessage({
+        type: "error",
+        message: `加载文件 ${fileName} 失败`,
+        duration: 2000,
+      });
+    }
+  }
+};
+
+// 加载 theme 文件夹中的样式文件内容
+const loadThemeFile = async (fileName) => {
+  const filePath = `../../theme/${fileName}`;
+  const loadFile = themeFiles[filePath];
+  if (loadFile) {
+    try {
+      const style = await loadFile();
+      styleContent.value = style;
+      updatePreview(); // 手动触发更新，因为 @input 不会触发
+    } catch (error) {
+      console.error(`加载样式文件 ${fileName} 失败:`, error);
+      ElMessage({
+        type: "error",
+        message: `加载样式文件 ${fileName} 失败`,
+        duration: 2000,
+      });
     }
   }
 };
@@ -177,13 +204,19 @@ const loadContentFile = async (fileName) => {
 // 初始化预览
 updatePreview();
 
-// 在组件挂载后，提取可用的 content 文件名
+// 在组件挂载后，提取可用的 content 和 theme 文件名
 onMounted(() => {
-  const fileNames = Object.keys(contentFiles).map(path => {
+  const contentFileNames = Object.keys(contentFiles).map((path) => {
     // 从路径中提取文件名，例如 '../../content/guide.md' -> 'guide.md'
-    return path.split('/').pop();
+    return path.split("/").pop();
   });
-  availableContentFiles.value = fileNames;
+  availableContentFiles.value = contentFileNames;
+
+  const themeFileNames = Object.keys(themeFiles).map((path) => {
+    // 从路径中提取文件名，例如 '../../theme/default.css' -> 'default.css'
+    return path.split("/").pop();
+  });
+  availableThemeFiles.value = themeFileNames;
 });
 
 const copyPreviewContent = () => {
@@ -243,13 +276,21 @@ const showMessage = (successful, customMessage = null) => {
       <el-aside width="40%" class="editor-section">
         <div class="section-title">
           <span>Markdown 编辑器</span>
-          <el-dropdown @command="loadContentFile" size="small" v-if="availableContentFiles.length > 0">
+          <el-dropdown
+            @command="loadContentFile"
+            size="small"
+            v-if="availableContentFiles.length > 0"
+          >
             <el-button type="primary" size="small" plain>
               加载文件<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item v-for="file in availableContentFiles" :key="file" :command="file">
+                <el-dropdown-item
+                  v-for="file in availableContentFiles"
+                  :key="file"
+                  :command="file"
+                >
                   {{ file }}
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -265,7 +306,21 @@ const showMessage = (successful, customMessage = null) => {
         />
       </el-aside>
       <el-aside width="30%" class="style-section">
-        <div class="section-title">样式编辑器</div>
+        <div class="section-title">
+          <span>样式编辑器</span>
+          <el-dropdown @command="loadThemeFile" size="small" v-if="availableThemeFiles.length > 0">
+            <el-button type="primary" size="small" plain>
+              加载主题<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-for="file in availableThemeFiles" :key="file" :command="file">
+                  {{ file }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         <el-input
           v-model="styleContent"
           type="textarea"
