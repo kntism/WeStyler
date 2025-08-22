@@ -5,7 +5,7 @@ import markdownPreviewStyle from "../../theme/default.css?raw";
 import EditorSection from "./MarkdownEditor/EditorSection.vue";
 import StyleSection from "./MarkdownEditor/StyleSection.vue";
 import PreviewSection from "./MarkdownEditor/PreviewSection.vue";
-import { createMarkdownInstance } from "./MarkdownEditor/markdownPlugins.js";
+import { createMarkdownInstance } from "@/utils/markdownPlugins.js";
 
 // Markdown 解析器实例
 const md = createMarkdownInstance();
@@ -20,7 +20,7 @@ const htmlContent = ref("");
 const styleElement = ref(null);
 
 // 导入预览更新工具函数
-import { updatePreview as updatePreviewUtil } from "./MarkdownEditor/previewUtils.js";
+import { updatePreview as updatePreviewUtil } from "@/utils/previewUtils.js";
 
 // 更新预览函数
 const updatePreview = () => {
