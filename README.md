@@ -18,18 +18,20 @@ WeStyler 是一个 Markdown 到 HTML 的实时预览和样式转换工具。它�
 ## 目录结构
 
 ```
-G:\projects\WeStyler\
-├── content\          # Markdown 示例文件
+G:\\projects\\WeStyler\\
+├── content\\          # Markdown 示例文件
 │   ├── about.md
 │   └── guide.md
-├── public\           # 静态资源
+├── public\\           # 静态资源
 │   └── westyler.svg
-├── src\              # 源代码
-│   ├── components\
-│   │   └── MarkdownEditor.vue  # 核心编辑器组件
+├── src\\              # 源代码
+│   ├── components\\
+│   │   ├── MarkdownEditor.vue  # 核心编辑器组件
+│   │   └── MarkdownEditor\\     # MarkdownEditor 子组件
+│   ├── utils\\        # 通用工具函数
 │   ├── App.vue       # 应用根组件
 │   └── main.js       # 应用入口
-├── theme\            # CSS 主题文件
+├── theme\\            # CSS 主题文件
 │   ├── dark.css
 │   └── default.css
 ├── index.html        # HTML 入口文件
@@ -91,7 +93,7 @@ npm run preview
 
 - **添加 Markdown 示例**: 在 `content` 目录下添加 `.md` 文件。
 - **添加 CSS 主题**: 在 `theme` 目录下添加 `.css` 文件。
-- **修改核心逻辑**: 编辑 `src/components/MarkdownEditor.vue` 组件。
+- **修改核心逻辑**: 编辑 `src/components/MarkdownEditor.vue` 组件及相关工具文件。
 
 ## 未来开发计划
 

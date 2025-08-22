@@ -32,6 +32,8 @@
 -   `src/`: 项目源码目录。
     -   `components/`: Vue 组件。
         -   `MarkdownEditor.vue`: 核心编辑器和预览组件。
+        -   `MarkdownEditor/`: MarkdownEditor 组件的子组件和相关工具。
+    -   `utils/`: 通用工具函数。
     -   `App.vue`: 应用入口组件。
     -   `main.js`: 项目主文件。
 -   `theme/`: 存放可供加载的 CSS 主题文件 (`.css`)。
