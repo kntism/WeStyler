@@ -1,133 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import MarkdownIt from "markdown-it";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.css";
 import exampleContent from "../../content/guide.md?raw";
 import markdownPreviewStyle from "../../theme/default.css?raw";
 import EditorSection from "./MarkdownEditor/EditorSection.vue";
 import StyleSection from "./MarkdownEditor/StyleSection.vue";
 import PreviewSection from "./MarkdownEditor/PreviewSection.vue";
+import { createMarkdownInstance } from "./MarkdownEditor/markdownPlugins.js";
 
-// Markdown 解析器，设置代码高亮
-const md = new MarkdownIt({
-  highlight: (str, lang) => {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(str, { language: lang }).value;
-      } catch (__) {}
-    }
-    return ""; // 如果没有指定语言或语言不支持，则返回空字符串
-  },
-});
-
-// 自定义插件，在<li>标签内部添加<section>标签
-const listItemSectionPlugin = (md) => {
-  // 保存原始的 list_item_open 渲染函数
-  const originalListItemOpen =
-    md.renderer.rules.list_item_open ||
-    ((tokens, idx, options, env, self) =>
-      self.renderToken(tokens, idx, options));
-  const originalListItemClose =
-    md.renderer.rules.list_item_close ||
-    ((tokens, idx, options, env, self) =>
-      self.renderToken(tokens, idx, options));
-
-  // 重写 list_item_open
-  md.renderer.rules.list_item_open = (tokens, idx, options, env, self) => {
-    // 渲染默认的 <li> 开始标签
-    const result = originalListItemOpen(tokens, idx, options, env, self);
-    // 在 <li> 内部开头添加 <section>
-    return result.replace("<li>", "<li><section>");
-  };
-
-  // 重写 list_item_close
-  md.renderer.rules.list_item_close = (tokens, idx, options, env, self) => {
-    // 渲染默认的 </li> 结束标签
-    const result = originalListItemClose(tokens, idx, options, env, self);
-    // 在 <li> 内部末尾添加 </section>
-    return result.replace("</li>", "</section></li>");
-  };
-};
-
-// 使用自定义插件
-md.use(listItemSectionPlugin);
-
-// 新增插件：识别链接并在文章底部生成引用
-const linkReferencesPlugin = (md) => {
-  // 将 links 数组定义为局部变量，并提供一个函数用于重置
-  let links = [];
-
-  const resetLinks = () => {
-    links = [];
-  };
-
-  // 保存原始的 link_open 渲染函数
-  const originalLinkOpen =
-    md.renderer.rules.link_open ||
-    ((tokens, idx, options, env, self) =>
-      self.renderToken(tokens, idx, options));
-
-  // 重写 link_open
-  md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
-    const href = tokens[idx].attrGet("href");
-    if (href) {
-      const id = links.length + 1;
-      links.push({ id, href, title: tokens[idx + 1].content });
-      tokens[idx].attrJoin("class", "reference");
-      tokens[idx].attrSet("id", `ref-${id}`);
-    }
-    // 将 <a> 替换为 <span>
-    return originalLinkOpen(tokens, idx, options, env, self).replace(
-      "<a",
-      "<span"
-    );
-  };
-
-  // 保存原始的 link_close 渲染函数
-  const originalLinkClose =
-    md.renderer.rules.link_close ||
-    ((tokens, idx, options, env, self) =>
-      self.renderToken(tokens, idx, options));
-
-  // 重写 link_close
-  md.renderer.rules.link_close = (tokens, idx, options, env, self) => {
-    const result = originalLinkClose(tokens, idx, options, env, self);
-    const link = links[links.length - 1];
-    if (link) {
-      return result.replace("</a>", "</span>") + `<sup>[${link.id}]</sup>`;
-    }
-    // 将 </a> 替换为 </span>
-    return result.replace("</a>", "</span>");
-  };
-
-  // 保存原始的 paragraph_close 渲染函数
-  const originalParagraphClose =
-    md.renderer.rules.paragraph_close ||
-    ((tokens, idx, options, env, self) =>
-      self.renderToken(tokens, idx, options));
-
-  // 重写 paragraph_close
-  md.renderer.rules.paragraph_close = (tokens, idx, options, env, self) => {
-    const result = originalParagraphClose(tokens, idx, options, env, self);
-    if (idx === tokens.length - 1) {
-      if (links.length > 0) {
-        let references = "<section class='reference-list'><h4>参考链接</h4>";
-        links.forEach((link) => {
-          references += `<p id='fn-${link.id}'>[${link.id}] ${link.title}：<em>${link.href}</em></p>`;
-        });
-        references += "</section>";
-        // 渲染完成后重置 links 数组
-        resetLinks();
-        return result + references;
-      }
-    }
-    return result;
-  };
-};
-
-// 使用自定义插件
-md.use(linkReferencesPlugin);
+// Markdown 解析器实例
+const md = createMarkdownInstance();
 
 // 默认的 Markdown 内容
 const markdownContent = ref(exampleContent);
