@@ -3,10 +3,10 @@ import { ref } from "vue";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
-import exampleContent from "../assets/example.md?raw";
-import markdownPreviewStyle from "../assets/markdown-preview.css?raw";
+import exampleContent from "../content/example.md?raw";
+import markdownPreviewStyle from "../theme/markdown-preview.css?raw";
 
-// Markdown解析器，设置代码高亮
+// Markdown 解析器，设置代码高亮
 const md = new MarkdownIt({
   highlight: (str, lang) => {
     if (lang && hljs.getLanguage(lang)) {
@@ -126,7 +126,7 @@ const linkReferencesPlugin = (md) => {
 // 使用自定义插件
 md.use(linkReferencesPlugin);
 
-// 默认的Markdown内容
+// 默认的 Markdown 内容
 const markdownContent = ref(exampleContent);
 
 // 从外部文件导入的样式内容
@@ -141,7 +141,7 @@ const updatePreview = () => {
   if (md.renderer.rules.paragraph_close.resetLinks) {
     md.renderer.rules.paragraph_close.resetLinks();
   }
-  // 更新HTML内容
+  // 更新 HTML 内容
   htmlContent.value = md.render(markdownContent.value);
 
   // 更新样式
