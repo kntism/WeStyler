@@ -224,3 +224,10 @@
   font-size: 10px;
   color: #a0a0a0; /* 灰色上标 */
 }
+
+/* 为深色主题添加特定的预览容器样式 */
+.preview-content.dark-theme {
+  border: 1px solid #444444;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}

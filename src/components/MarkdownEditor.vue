@@ -189,6 +189,18 @@ const loadThemeFile = async (fileName) => {
     try {
       const style = await loadFile();
       styleContent.value = style;
+      
+      // 动态调整预览区域容器的类名以匹配主题
+      const previewContentElement = document.querySelector('.preview-content');
+      if (previewContentElement) {
+        // 移除所有可能的主题类
+        previewContentElement.classList.remove('dark-theme');
+        // 根据文件名添加对应的主题类
+        if (fileName === 'dark.css') {
+          previewContentElement.classList.add('dark-theme');
+        }
+      }
+
       updatePreview(); // 手动触发更新，因为 @input 不会触发
     } catch (error) {
       console.error(`加载样式文件 ${fileName} 失败:`, error);
