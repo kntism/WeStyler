@@ -18,7 +18,7 @@ WeStyler 是一个 Markdown 到 HTML 的实时预览和样式转换工具。它�
 ## 目录结构
 
 ```
-G:\\projects\\WeStyler\\
+WeStyler\\
 ├── content\\          # Markdown 示例文件
 │   ├── about.md
 │   └── guide.md
@@ -104,8 +104,6 @@ npm run preview
 
 2.  **增强主题管理**
     *   为主题 CSS 文件添加元数据（如主题名称、作者），并在下拉菜单中显示更友好的名称。
-    *   提供主题预览功能。
-    *   允许用户上传或创建自定义主题。
 
 3.  **优化内容加载与历史记录**
     *   记住用户最近加载过的 Markdown 文件和主题文件，方便快速切换。
@@ -124,5 +122,4 @@ npm run preview
     *   增强应用的可访问性 (Accessibility)，确保对辅助技术友好。
 
 7.  **开发者体验**
-    *   随着功能增加，考虑将 `MarkdownEditor.vue` 拆分为更小的组件。
     *   考虑引入 TypeScript 来增强代码健壮性。
